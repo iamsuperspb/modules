@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+	  <add id="Shipping_Lalamove::lalamove" title="Lalamove" translate="title" module="Shipping_Lalamove" sortOrder="90" dependsOnModule="Shipping_Lalamove" resource="Shipping_Lalamove::lalamove"/>
+
+	  <add id="Shipping_Lalamove::settings" title="Settings" translate="title" module="Shipping_Lalamove" parent="Shipping_Lalamove::lalamove" sortOrder="60" dependsOnModule="Shipping_Lalamove" resource="Shipping_Lalamove::settings"/>
+	  <add id="Shipping_Lalamove::lalamove_config" title="Lalamove Configuration" translate="title" module="Shipping_Lalamove" parent="Shipping_Lalamove::settings" sortOrder="10" dependsOnModule="Shipping_Lalamove" action="adminhtml/system_config/edit/section/carriers" resource="Shipping_Lalamove::lalamove_config"/>
+	</menu>
+</config>

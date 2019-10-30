@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <lalamove>
+                <active>0</active>
+                <model>Shipping\Lalamove\Model\Carrier\Lalamove</model>
+                <name>Lalamove</name>
+                <price>10.00</price>
+                <title>Lalamove Shipping</title>
+                <type>I</type>
+            </lalamove>
+        </carriers>
+    </default>
+</config>

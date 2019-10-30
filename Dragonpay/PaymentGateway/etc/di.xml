@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="DragonpayPaymentGatewayFecade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\Dragonpay\PaymentGateway\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Dragonpay\PaymentGateway\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">SamplePaymentGatewayValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">SamplePaymentGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <virtualType name="DragonpayPaymentGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\Dragonpay\PaymentGateway\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Logger, initialized with DragonpayPaymentGatewayGatewayConfig -->
+    <virtualType name="DragonpayPaymentGatewayLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Dragonpay\PaymentGateway\Gateway\Http\Client\ClientMock">
+        <arguments>
+            <argument name="logger" xsi:type="object">DragonpayPaymentGatewayLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- Commands infrastructure -->
+    <virtualType name="DragonpayPaymentGatewayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">DragonpayPaymentGatewayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">DragonpayPaymentGatewayCaptureCommand</item>
+                <item name="void" xsi:type="string">DragonpayPaymentGatewayVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize command -->
+    <virtualType name="DragonpayPaymentGatewayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">DragonpayPaymentGatewayAuthorizationRequest</argument>
+            <argument name="handler" xsi:type="object">DragonpayPaymentGatewayResponseHandlerComposite</argument>
+            <argument name="transferFactory" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorization Request -->
+    <virtualType name="DragonpayPaymentGatewayAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">Dragonpay\PaymentGateway\Gateway\Request\AuthorizationRequest</item>
+                <item name="mockData" xsi:type="string">Dragonpay\PaymentGateway\Gateway\Request\MockDataRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Dragonpay\PaymentGateway\Gateway\Request\AuthorizationRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Capture command -->
+    <virtualType name="DragonpayPaymentGatewayCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Request\CaptureRequest</argument>
+            <argument name="handler" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Request -->
+    <type name="Dragonpay\PaymentGateway\Gateway\Request\CaptureRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Void command -->
+    <virtualType name="DragonpayPaymentGatewayVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Request\VoidRequest</argument>
+            <argument name="handler" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Dragonpay\PaymentGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void Request -->
+    <type name="Dragonpay\PaymentGateway\Gateway\Request\VoidRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Response handlers -->
+    <virtualType name="DragonpayPaymentGatewayResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="txnid" xsi:type="string">Dragonpay\PaymentGateway\Gateway\Response\TxnIdHandler</item>
+                <item name="fraud" xsi:type="string">Dragonpay\PaymentGateway\Gateway\Response\FraudHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Value handlers infrastructure -->
+    <virtualType name="DragonpayPaymentGatewayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">DragonpayPaymentGatewayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="DragonpayPaymentGatewayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Dragonpay\PaymentGateway\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">DragonpayPaymentGatewayConfig</argument>
+        </arguments>
+    </type>
+
+</config>

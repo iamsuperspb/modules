@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+	  <add id="Shipping_Ninjavan::ninjavan" title="Ninja Van" translate="title" module="Shipping_Ninjavan" sortOrder="90" dependsOnModule="Shipping_Ninjavan" resource="Shipping_Ninjavan::ninjavan"/>
+
+	  <add id="Shipping_Ninjavan::settings" title="Settings" translate="title" module="Shipping_Ninjavan" parent="Shipping_Ninjavan::ninjavan" sortOrder="60" dependsOnModule="Shipping_Ninjavan" resource="Shipping_Ninjavan::settings"/>
+	  <add id="Shipping_Ninjavan::ninjavan_config" title="Ninja Van Configuration" translate="title" module="Shipping_Ninjavan" parent="Shipping_Ninjavan::settings" sortOrder="10" dependsOnModule="Shipping_Ninjavan" action="adminhtml/system_config/edit/section/carriers" resource="Shipping_Ninjavan::ninjavan_config"/>
+	</menu>
+</config>
